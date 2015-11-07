@@ -13,13 +13,18 @@ namespace Demo_Persistence_GameRoomObject
         {
             string textFilePath = "Data\\Data.txt";
 
-            SimpleTextReadWrite(textFilePath);
+            //SimpleTextReadWrite(textFilePath);
             //StructuredTextReadWrite(textFilePath);
+            FileStreamReadWrite(textFilePath);
 
             Console.WriteLine("\nPress any key to exit.");
             Console.ReadKey();
         }
 
+        /// <summary>
+        /// a method that demonstrates writing strings to a text file
+        /// </summary>
+        /// <param name="dataFile"></param>
         static void SimpleTextReadWrite(string dataFile)
         {
             string address01;
@@ -45,13 +50,17 @@ namespace Demo_Persistence_GameRoomObject
 
             Console.WriteLine("Read and display the addresses from the text file. Press any key to continue.\n");
             Console.ReadKey();
-            
+
             // read all of the data file info into a single string
             dataFileContents = File.ReadAllText(dataFile);
 
             Console.WriteLine(dataFileContents);
         }
 
+        /// <summary>
+        /// method that demonstrates a text file where rows have multiple properties
+        /// </summary>
+        /// <param name="dataFile"></param>
         static void StructuredTextReadWrite(string dataFile)
         {
             string dataString;
@@ -85,6 +94,10 @@ namespace Demo_Persistence_GameRoomObject
             DisplayDataByProperty(dataFile);
         }
 
+        /// <summary>
+        /// method to initialize and build out the addresses string
+        /// </summary>
+        /// <returns></returns>
         static string BuildDataString()
         {
             StringBuilder dataStringBuilder = new StringBuilder();
@@ -137,7 +150,6 @@ namespace Demo_Persistence_GameRoomObject
             return dataString;
         }
 
-
         /// <summary>
         /// method to display the addresses properties
         /// </summary>
@@ -151,7 +163,7 @@ namespace Demo_Persistence_GameRoomObject
 
             // iterate through the address array and display each property
             for (int index = 0; index < addresses.Length; index++)
-			{
+            {
                 // use the Split method and the delineator on the array to separate each property into an array of properties
                 string[] properties = addresses[index].Split(delineator);
 
@@ -163,7 +175,64 @@ namespace Demo_Persistence_GameRoomObject
                 Console.WriteLine("Zip: {0}", properties[5]);
 
                 Console.WriteLine();
-			}
+            }
+        }
+
+        /// <summary>
+        /// a method that demonstrates writing strings to a text file using the StreamWriter/StreamReader objects
+        /// </summary>
+        /// <param name="dataFile"></param>
+        static void FileStreamReadWrite(string dataFile)
+        {
+            string address01;
+            string address02;
+
+            // initialize a FileStream object for writing
+            FileStream wfileStream = File.OpenWrite(dataFile);
+
+            // wrap the FieldStream object in a using statement to ensure of the dispose
+            using (wfileStream)
+            {
+                // wrap the FileStream object in a StreamWriter object to simplify writing strings
+                StreamWriter sWriter = new StreamWriter(wfileStream);
+
+                // initialize strings with addresses 
+                address01 = "Flintstone,Fred,301 Cobblestone Way,Bedrock,70777\n";
+                address02 = "Rubble,Barney,303 Cobblestone Way,Bedrock,70777\n";
+
+                Console.WriteLine("The following addresses will be added to the text file.\n");
+                Console.WriteLine(address01 + address02);
+
+                Console.WriteLine("\nAdd addresses. Press any key to continue.\n");
+                Console.ReadKey();
+
+                // add address strings to the end of the text file
+                sWriter.Write(address01);
+                sWriter.Write(address02);
+
+                sWriter.Close();
+
+                Console.WriteLine("Addresses added successfully.\n");
+            }
+
+            // initialize a FileStream object for reading
+            FileStream rFileStream = File.OpenRead(dataFile);
+
+            // wrap the FieldStream object in a using statement to ensure of the dispose
+            using (rFileStream)
+            {
+                // initialize a FileStream object for reading
+                StreamReader sReader = new StreamReader(rFileStream);
+
+                Console.WriteLine("Read and display the addresses from the text file. Press any key to continue.\n");
+                Console.ReadKey();
+
+                // keep reading lines of text until the end of the file is reached
+                while (!sReader.EndOfStream)
+                {
+                    Console.WriteLine(sReader.ReadLine());
+                }
+            }
         }
     }
 }
