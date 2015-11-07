@@ -13,9 +13,8 @@ namespace Demo_Persistence_GameRoomObject
         {
             string textFilePath = "Data\\Data.txt";
 
-            //SimpleTextReadWrite(textFilePath);
+            SimpleTextReadWrite(textFilePath);
             //StructuredTextReadWrite(textFilePath);
-            ObjectArrayReadWrite(textFilePath);
 
             Console.WriteLine("\nPress any key to exit.");
             Console.ReadKey();
@@ -23,127 +22,148 @@ namespace Demo_Persistence_GameRoomObject
 
         static void SimpleTextReadWrite(string dataFile)
         {
-            string fieldNames;
             string address01;
             string address02;
 
             string dataFileContents = "";
 
-            fieldNames = "lastName,firstName,address,city,zip\n";
+            // initialize strings with addresses
             address01 = "Flintstone,Fred,301 Cobblestone Way,Bedrock,70777\n";
-            address02 = "Rubble,Barney,301 Cobblestone Way,Bedrock,70777\n";
+            address02 = "Rubble,Barney,303 Cobblestone Way,Bedrock,70777\n";
 
-            Console.WriteLine("The following addresses will be added to Data.txt.\n");
+            Console.WriteLine("The following addresses will be added to the text file.\n");
             Console.WriteLine(address01 + address02);
 
             Console.WriteLine("\nAdd addresses. Press any key to continue.\n");
             Console.ReadKey();
 
-            File.WriteAllText(dataFile, fieldNames);
+            // add address strings to the end of the text file
             File.AppendAllText(dataFile, address01);
             File.AppendAllText(dataFile, address02);
 
             Console.WriteLine("Addresses added successfully.\n");
 
-            Console.WriteLine("Read and display the addresses from Data.txt. Press any key to continue.\n");
+            Console.WriteLine("Read and display the addresses from the text file. Press any key to continue.\n");
             Console.ReadKey();
-
+            
+            // read all of the data file info into a single string
             dataFileContents = File.ReadAllText(dataFile);
 
             Console.WriteLine(dataFileContents);
-
-            Console.ReadKey();
         }
 
         static void StructuredTextReadWrite(string dataFile)
         {
-            const char delineator = ',';
-            string endOfRecord = "\n";
-
-            string datastring;
-            string fieldNames;
+            string dataString;
             string dataFileContents = "";
 
-            string lastName = "Flintstone";
-            string firstName = "Fred";
-            string address = "222 Rocky Way";
-            string city = "Bedrock";
-            string state = "MI";
-            string zip = "70777";
+            // initialize a string with all of the addresses
+            dataString = BuildDataString();
 
-            datastring =
+            Console.WriteLine("The following addresses will be added to text file.\n");
+            Console.WriteLine(dataString);
+
+            Console.WriteLine("\nAdd addresses. Press any key to continue.\n");
+            Console.ReadKey();
+
+            // empty the text file and add the addresses
+            File.WriteAllText(dataFile, dataString);
+
+            Console.WriteLine("Address added successfully.\n");
+
+            Console.WriteLine("Read and display the addresses from the text file. Press any key to continue.\n");
+            Console.ReadKey();
+
+            // read all addresses from the text file into a single string
+            dataFileContents = File.ReadAllText(dataFile);
+            Console.WriteLine(dataFileContents);
+
+            Console.WriteLine("Read and display the addresses from the text file. Press any key to continue.\n");
+            Console.ReadKey();
+
+            // split the text file string into individual properties and display
+            DisplayDataByProperty(dataFile);
+        }
+
+        static string BuildDataString()
+        {
+            StringBuilder dataStringBuilder = new StringBuilder();
+
+            string lastName;
+            string firstName;
+            string address;
+            string city;
+            string state;
+            string zip;
+
+            // declare a property delineator
+            const char delineator = ',';
+
+            string dataString;
+
+            // use the StringBuilder class to build the string of addresses
+            lastName = "Flintstone";
+            firstName = "Fred";
+            address = "301 Cobblestone Way";
+            city = "Bedrock";
+            state = "MI";
+            zip = "70777";
+
+            dataStringBuilder.AppendLine(
                 lastName + delineator +
                 firstName + delineator +
                 address + delineator +
                 city + delineator +
                 state + delineator +
-                zip + endOfRecord;
+                zip);
 
-            fieldNames = "lastName,firstName,address,city,zip\n";
+            lastName = "Rubble";
+            firstName = "Barney";
+            address = "303 Cobblestone Way";
+            city = "Bedrock";
+            state = "MI";
+            zip = "70777";
 
-            Console.WriteLine("The following addresses will be added to Data.txt.\n");
-            Console.WriteLine(datastring);
+            dataStringBuilder.AppendLine(
+                lastName + delineator +
+                firstName + delineator +
+                address + delineator +
+                city + delineator +
+                state + delineator +
+                zip);
 
-            Console.WriteLine("\nAdd addresses. Press any key to continue.\n");
-            Console.ReadKey();
+            dataString = dataStringBuilder.ToString();
 
-            File.WriteAllText(dataFile, fieldNames);
-            File.AppendAllText(dataFile, datastring);
-
-            Console.WriteLine("Addresses added successfully.\n");
-
-            Console.WriteLine("Read and display the addresses from Data.txt. Press any key to continue.\n");
-            Console.ReadKey();
-
-            dataFileContents = File.ReadAllText(dataFile);
-
-            Console.WriteLine(dataFileContents);
+            return dataString;
         }
 
-        static void ObjectArrayReadWrite(string dataFile)
+
+        /// <summary>
+        /// method to display the addresses properties
+        /// </summary>
+        /// <param name="dataFile"></param>
+        static void DisplayDataByProperty(string dataFile)
         {
-            string playerName;
-            int highScore;
+            const char delineator = ',';
 
-            HighScore[] highScores = {
-                                         new HighScore("John", 1296),
-                                         new HighScore("Jeff", 964),
-                                         new HighScore("Joan", 275),
-                                         new HighScore("Charlie", 2334)
-                                     };
+            // read each line of addresses as a string element in an array
+            string[] addresses = File.ReadAllLines(dataFile);
 
-            string textForDataFile = "";
-            string dataFileContents = "";
+            // iterate through the address array and display each property
+            for (int index = 0; index < addresses.Length; index++)
+			{
+                // use the Split method and the delineator on the array to separate each property into an array of properties
+                string[] properties = addresses[index].Split(delineator);
 
+                Console.WriteLine("Last Name: {0}", properties[0]);
+                Console.WriteLine("First Name: {0}", properties[1]);
+                Console.WriteLine("Address: {0}", properties[2]);
+                Console.WriteLine("City: {0}", properties[3]);
+                Console.WriteLine("State: {0}", properties[4]);
+                Console.WriteLine("Zip: {0}", properties[5]);
 
-            Console.WriteLine("The following high scores will be added to Data.txt.\n");
-
-            foreach (var player in highScores)
-            {
-                Console.WriteLine("Player: {0}\tScore: {1}", player.PlayerName, player.PlayerScore);
-            }
-
-
-            Console.WriteLine("\nAdd addresses. Press any key to continue.\n");
-            Console.ReadKey();
-
-            foreach (var player in highScores)
-            {
-                Console.WriteLine("Player: {0}\tScore: {1}", player.PlayerName, player.PlayerScore);
-            }
-
-            File.WriteAllText(dataFile, textForDataFile);
-
-            Console.WriteLine("Addresses added successfully.\n");
-
-            Console.WriteLine("Read and display the addresses from Data.txt. Press any key to continue.\n");
-            Console.ReadKey();
-
-            dataFileContents = File.ReadAllText(dataFile);
-
-            Console.WriteLine(dataFileContents);
-
-            Console.ReadKey();
+                Console.WriteLine();
+			}
         }
     }
 }
