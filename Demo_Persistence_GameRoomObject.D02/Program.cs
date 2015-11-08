@@ -13,141 +13,98 @@ namespace Demo_Persistence_GameRoomObject
         {
             string textFilePath = "Data\\Data.txt";
 
-            ObjectArrayReadWrite(textFilePath);
+            ObjectListReadWrite(textFilePath);
 
             Console.WriteLine("\nPress any key to exit.");
             Console.ReadKey();
         }
 
-        static void SimpleTextReadWrite(string dataFile)
+        static void ObjectListReadWrite(string dataFile)
         {
-            string fieldNames;
-            string address01;
-            string address02;
+            List<HighScore> highScoresClassListWrite = new List<HighScore>();
 
-            string dataFileContents = "";
+            List<string> highScoresStringListRead = new List<string>(); ;
+            List<HighScore> highScoresClassListRead = new List<HighScore>(); ;
 
-            fieldNames = "lastName,firstName,address,city,zip\n";
-            address01 = "Flintstone,Fred,301 Cobblestone Way,Bedrock,70777\n";
-            address02 = "Rubble,Barney,301 Cobblestone Way,Bedrock,70777\n";
+            string highScoreString;
 
-            Console.WriteLine("The following addresses will be added to Data.txt.\n");
-            Console.WriteLine(address01 + address02);
-
-            Console.WriteLine("\nAdd addresses. Press any key to continue.\n");
-            Console.ReadKey();
-
-            File.WriteAllText(dataFile, fieldNames);
-            File.AppendAllText(dataFile, address01);
-            File.AppendAllText(dataFile, address02);
-
-            Console.WriteLine("Addresses added successfully.\n");
-
-            Console.WriteLine("Read and display the addresses from Data.txt. Press any key to continue.\n");
-            Console.ReadKey();
-
-            dataFileContents = File.ReadAllText(dataFile);
-
-            Console.WriteLine(dataFileContents);
-
-            Console.ReadKey();
-        }
-
-        static void StructuredTextReadWrite(string dataFile)
-        {
-            const char delineator = ',';
-            string endOfRecord = "\n";
-
-            string datastring;
-            string fieldNames;
-            string dataFileContents = "";
-
-            string lastName = "Flintstone";
-            string firstName = "Fred";
-            string address = "222 Rocky Way";
-            string city = "Bedrock";
-            string state = "MI";
-            string zip = "70777";
-
-            datastring =
-                lastName + delineator +
-                firstName + delineator +
-                address + delineator +
-                city + delineator +
-                state + delineator +
-                zip + endOfRecord;
-
-            fieldNames = "lastName,firstName,address,city,zip\n";
-
-            Console.WriteLine("The following addresses will be added to Data.txt.\n");
-            Console.WriteLine(datastring);
-
-            Console.WriteLine("\nAdd addresses. Press any key to continue.\n");
-            Console.ReadKey();
-
-            File.WriteAllText(dataFile, fieldNames);
-            File.AppendAllText(dataFile, datastring);
-
-            Console.WriteLine("Addresses added successfully.\n");
-
-            Console.WriteLine("Read and display the addresses from Data.txt. Press any key to continue.\n");
-            Console.ReadKey();
-
-            dataFileContents = File.ReadAllText(dataFile);
-
-            Console.WriteLine(dataFileContents);
-        }
-
-        static void ObjectArrayReadWrite(string dataFile)
-        {
-            string playerName;
-            int highScore;
-
-            // initialize the array of high scores
-            HighScore[] highScores = {
-                                         new HighScore("John", 1296),
-                                         new HighScore("Jeff", 964),
-                                         new HighScore("Joan", 275),
-                                         new HighScore("Charlie", 2334)
-                                     };
-
-            String[] highScoresOutput;
-
-            string textForDataFile = "";
-            string dataFileContents = "";
-
+            // initialize a list of HighScore objects
+            highScoresClassListWrite = InitializeListOfHighScores();
 
             Console.WriteLine("The following high scores will be added to Data.txt.\n");
+            // display list of high scores objects
+            DisplayHighScores(highScoresClassListWrite);
 
-            // display array of high scores
-            foreach (var player in highScores)
-            {
-                Console.WriteLine("Player: {0}\tScore: {1}", player.PlayerName, player.PlayerScore);
-            }
-
-            Console.WriteLine("\nAdd high scores. Press any key to continue.\n");
+            Console.WriteLine("\nAdd high scores to text file. Press any key to continue.\n");
             Console.ReadKey();
 
-            // build the text to write to the text file line by line
-            foreach (var player in highScores)
-            {
-                textForDataFile += player.PlayerName + "," + player.PlayerScore + "\n";
-            }
-
-            File.WriteAllText(dataFile, textForDataFile);
+            // build the list of strings and write to the text file line by line
+            WriteHighScoresToTextFile(highScoresClassListWrite, dataFile);
 
             Console.WriteLine("High scores added successfully.\n");
 
-            Console.WriteLine("Read and display the high scores from Data.txt. Press any key to continue.\n");
+            Console.WriteLine("Read into a string of HighScore and display the high scores from data file. Press any key to continue.\n");
             Console.ReadKey();
 
-            // read each line and put it into an array
-            highScoresOutput = File.ReadAllLines(dataFile);
+            // read each line and put it into an array and convert the array to a list
+            highScoresStringListRead = File.ReadAllLines(dataFile).ToList();
 
+            // build the list of HighScore class objects from the list of strings
+            highScoresClassListRead = BuildListOfHighScoreObjects(highScoresStringListRead);
+        }
 
-            Console.WriteLine(dataFileContents);
+        static List<HighScore> InitializeListOfHighScores()
+        {
+            List<HighScore> highScoresClassList = new List<HighScore>();
 
-            Console.ReadKey();
+            // initialize the IList of high scores - note: no instantiation for an interface
+            highScoresClassList.Add(new HighScore() { PlayerName = "John", PlayerScore = 1296 });
+            highScoresClassList.Add(new HighScore() { PlayerName = "Joan", PlayerScore = 345 });
+            highScoresClassList.Add(new HighScore() { PlayerName = "Jeff", PlayerScore = 867 });
+            highScoresClassList.Add(new HighScore() { PlayerName = "Charlie", PlayerScore = 2309 });
+
+            return highScoresClassList;
+        }
+
+        static void DisplayHighScores(List<HighScore> highScoreClassList)
+        {
+            foreach (HighScore player in highScoreClassList)
+            {
+                Console.WriteLine("Player: {0}\tScore: {1}", player.PlayerName, player.PlayerScore);
+            }
+        }
+
+        static void WriteHighScoresToTextFile(List<HighScore> highScoreClassLIst, string dataFile)
+        {
+            string highScoreString;
+
+            List<string> highScoresStringListWrite = new List<string>();
+
+            // build the list to write to the text file line by line
+            foreach (var player in highScoreClassLIst)
+            {
+                highScoreString = player.PlayerName + "," + player.PlayerScore + "\n";
+                highScoresStringListWrite.Add(highScoreString);
+            }
+
+            File.WriteAllLines(dataFile, highScoresStringListWrite);
+        }
+
+        static List<HighScore> BuildListOfHighScoreObjects(List<string> highScoresStringList)
+        {
+            const char delineator = ',';
+
+            List<HighScore> highScoresClassList = new List<HighScore>();
+
+            foreach (string highScoreString in highScoresStringList)
+            {
+                // use the Split method and the delineator on the array to separate each property into an array of properties
+                string[] properties = highScoreString.Split(delineator);
+
+                highScoresClassList.Add(new HighScore() { PlayerName = properties[0], PlayerScore = Convert.ToInt32(properties[1]) });
+            }
+
+            return highScoresClassList;
         }
     }
 }
