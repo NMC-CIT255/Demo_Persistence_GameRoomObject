@@ -46,11 +46,12 @@ namespace Demo_Persistence_GameRoomObject
             Console.WriteLine("Read into a string of HighScore and display the high scores from data file. Press any key to continue.\n");
             Console.ReadKey();
 
-            // read each line and put it into an array and convert the array to a list
-            highScoresStringListRead = File.ReadAllLines(dataFile).ToList();
 
             // build the list of HighScore class objects from the list of strings
-            highScoresClassListRead = BuildListOfHighScoreObjects(highScoresStringListRead);
+            highScoresClassListRead = ReadHighScoresFromTextFile(dataFile);
+
+            // display list of high scores objects
+            DisplayHighScores(highScoresClassListRead);
         }
 
         static List<HighScore> InitializeListOfHighScores()
@@ -83,23 +84,30 @@ namespace Demo_Persistence_GameRoomObject
             // build the list to write to the text file line by line
             foreach (var player in highScoreClassLIst)
             {
-                highScoreString = player.PlayerName + "," + player.PlayerScore + "\n";
+                highScoreString = player.PlayerName + "," + player.PlayerScore;
                 highScoresStringListWrite.Add(highScoreString);
             }
 
             File.WriteAllLines(dataFile, highScoresStringListWrite);
         }
 
-        static List<HighScore> BuildListOfHighScoreObjects(List<string> highScoresStringList)
+        static List<HighScore> ReadHighScoresFromTextFile(string dataFile)
         {
             const char delineator = ',';
 
+            List<string> highScoresStringList = new List<string>();
+
             List<HighScore> highScoresClassList = new List<HighScore>();
+
+            // read each line and put it into an array and convert the array to a list
+            highScoresStringList = File.ReadAllLines(dataFile).ToList();
 
             foreach (string highScoreString in highScoresStringList)
             {
                 // use the Split method and the delineator on the array to separate each property into an array of properties
                 string[] properties = highScoreString.Split(delineator);
+
+                //highScoresClassList.Add(new HighScore() { PlayerName = properties[0], PlayerScore = Convert.ToInt32(properties[1]) });
 
                 highScoresClassList.Add(new HighScore() { PlayerName = properties[0], PlayerScore = Convert.ToInt32(properties[1]) });
             }

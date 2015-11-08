@@ -15,7 +15,7 @@ namespace Demo_Persistence_GameRoomObject
 
             //SimpleTextReadWrite(textFilePath);
             //StructuredTextReadWrite(textFilePath);
-            FileStreamReadWrite(textFilePath);
+            //FileStreamReadWrite(textFilePath);
 
             Console.WriteLine("\nPress any key to exit.");
             Console.ReadKey();
